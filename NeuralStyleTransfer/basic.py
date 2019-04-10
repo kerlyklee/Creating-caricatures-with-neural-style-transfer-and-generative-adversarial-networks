@@ -28,9 +28,9 @@ import argparse
 import sys; sys.argv=['']; del sys
 
 parser = argparse.ArgumentParser(description='Image neural style transfer implemented with Keras')
-parser.add_argument('--C:/Users/Kerly/Thesis/NeuralStyleTransfer/KatsePildid/city', metavar='content', type=str, help='Path to target content image')
-parser.add_argument('--C:/Users/Kerly/Thesis/NeuralStyleTransfer/KatsePildid/style1', metavar='style', type=str, help='Path to target style image')
-parser.add_argument('--Tulemus1', metavar='res_prefix', type=str, help='Name of generated image')
+parser.add_argument('--content_img', metavar='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/city', type=str, help='Path to target content image')
+parser.add_argument('--style_img', metavar='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/style1', type=str, help='Path to target style image')
+parser.add_argument('--Tulemus', metavar='res_prefix', type=str, help='Name of generated image')
 parser.add_argument('--iter', type=int, default=10, required=False, help='Number of iterations to run')
 parser.add_argument('--content_weight', type=float, default=0.025, required=False, help='Content weight')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False, help='Style weight')
