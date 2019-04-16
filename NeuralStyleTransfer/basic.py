@@ -1,17 +1,4 @@
 #!/usr/bin/env python3
-"""
-style-transfer.py - An implementation of the style transfer algorithm. It's a synthesis of the original paper, combined
-                    with the adaption to the loss function that adds in the variation loss factor for normalization.
-                    Components have been synthesized together.
-
-For reference:
-    - https://arxiv.org/pdf/1508.06576.pdf (original style loss paper)
-    - https://arxiv.org/pdf/1412.0035.pdf (explains the ideas behind variation loss)
-    - https://github.com/keras-team/keras/blob/master/examples/neural_style_transfer.py
-      (style transfer as given by the keras team)
-    - https://harishnarayanan.org/writing/artistic-style-transfer/ (longer tutorial that walks through convolutions)
-
-"""
 
 import keras.backend as K
 from keras.applications import VGG16
@@ -28,15 +15,15 @@ import argparse
 import sys; sys.argv=['']; del sys
 
 parser = argparse.ArgumentParser(description='Image neural style transfer implemented with Keras')
-parser.add_argument('--content_img', metavar='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/city', type=str, help='Path to target content image')
-parser.add_argument('--style_img', metavar='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/style1', type=str, help='Path to target style image')
-parser.add_argument('--Tulemus', metavar='res_prefix', type=str, help='Name of generated image')
+parser.add_argument('--content_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/Matt_DamonTest.jpg', type=str, help='Path to target content image')
+parser.add_argument('--style_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/C_Kim_Jongun1Test.jpg', type=str, help='Path to target style image')
+parser.add_argument('--result_img_prefix', default='tulemus', type=str, help='Name of generated image')
 parser.add_argument('--iter', type=int, default=10, required=False, help='Number of iterations to run')
 parser.add_argument('--content_weight', type=float, default=0.025, required=False, help='Content weight')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False, help='Style weight')
 parser.add_argument('--var_weight', type=float, default=1.0, required=False, help='Total Variation weight')
-parser.add_argument('--height', type=int, default=512, required=False, help='Height of the images')
-parser.add_argument('--width', type=int, default=512, required=False, help='Width of the images')
+parser.add_argument('--height', type=int, default=652, required=False, help='Height of the images')
+parser.add_argument('--width', type=int, default=452, required=False, help='Width of the images')
 
 args = parser.parse_args()
 print('args')
@@ -51,7 +38,7 @@ img_channels = 3
 content_path = args.content_img
 style_path = args.style_img
 target_path = args.result_img_prefix
-target_extension = '.png'
+target_extension = '.jpg'
 
 CONTENT_IMAGE_POS = 0
 STYLE_IMAGE_POS = 1
