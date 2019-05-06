@@ -1,5 +1,5 @@
 
-#code inspired from https://github.com/llSourcell/Pokemon_GAN
+#code based on from https://github.com/llSourcell/Pokemon_GAN
 #Some codes from https://github.com/Newmu/dcgan_code
 
 from __future__ import division
@@ -24,7 +24,7 @@ def show_all_variables():
   slim.model_analyzer.analyze_vars(model_vars, print_info=True)
 
 def get_image(image_path, input_height, input_width,
-              resize_height=64, resize_width=64,
+              resize_height=36, resize_width=36,
               crop=True, grayscale=False):
   image = imread(image_path, grayscale)
   return transform(image, input_height, input_width,
@@ -68,7 +68,7 @@ def imsave(images, size, path):
   return scipy.misc.imsave(path, image)
 
 def center_crop(x, crop_h, crop_w,
-                resize_h=64, resize_w=64):
+                resize_h=36, resize_w=36):
   if crop_w is None:
     crop_w = crop_h
   h, w = x.shape[:2]
@@ -78,7 +78,7 @@ def center_crop(x, crop_h, crop_w,
       x[j:j+crop_h, i:i+crop_w], [resize_h, resize_w])
 
 def transform(image, input_height, input_width, 
-              resize_height=64, resize_width=64, crop=True):
+              resize_height=36, resize_width=36, crop=True):
   if crop:
     cropped_image = center_crop(
       image, input_height, input_width, 
@@ -240,5 +240,5 @@ def visualize(sess, dcgan, config, option):
       make_gif(image_set[-1], './samples/test_gif_%s.gif' % (idx))
 
     new_image_set = [merge(np.array([images[idx] for images in image_set]), [10, 10]) \
-        for idx in range(64) + range(63, -1, -1)]
-    make_gif(new_image_set, './samples/test_gif_merged.gif', duration=8)
+        for idx in range(36) + range(35, -1, -1)]
+    make_gif(new_image_set, './samples/test_gif_merged.gif', duration=6)

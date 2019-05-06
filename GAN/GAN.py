@@ -1,6 +1,6 @@
 
 # generate caricatures
-# code inspired from https://github.com/llSourcell/Pokemon_GAN
+# code based on from https://github.com/llSourcell/Pokemon_GAN
 import os
 import tensorflow as tf
 import numpy as np
@@ -12,9 +12,9 @@ from utils import *
 slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
-BATCH_SIZE = 64
-EPOCH = 5000
-version = 'new_caricatures'
+BATCH_SIZE = 36
+EPOCH = 500
+version = 'new_caricatures3'
 newCaric_path = './' + version
 
 
@@ -24,10 +24,10 @@ def lrelu(x, n, leak=0.2):
  
 def process_data():   
     current_dir = os.getcwd()
-    pokemon_dir = os.path.join(current_dir, 'data')
+    caricature_dir = os.path.join(current_dir, 'Caricature_Data')
     images = []
-    for each in os.listdir(pokemon_dir):
-        images.append(os.path.join(pokemon_dir,each))
+    for each in os.listdir(caricature_dir):
+        images.append(os.path.join(caricature_dir,each))
     # print images    
     all_images = tf.convert_to_tensor(images, dtype = tf.string)
     
@@ -61,11 +61,11 @@ def process_data():
 
     return iamges_batch, num_images
 
-def generator(input, random_dim, is_train, reuse=False):
-    c4, c8, c16, c32, c64 = 512, 256, 128, 64, 32 # channel num
+def generator(input, random_dim, is_train, reuse=tf.AUTO_REUSE):
+    c4, c8, c16, c32, c64 = 288, 144, 72, 36, 18 # channel num
     s4 = 4
     output_dim = CHANNEL  # RGB image
-    with tf.variable_scope('gen') as scope:
+    with tf.variable_scope('gens') as scope:
         if reuse:
             scope.reuse_variables()
         w1 = tf.get_variable('w1', shape=[random_dim, s4 * s4 * c4], dtype=tf.float32,
@@ -112,8 +112,8 @@ def generator(input, random_dim, is_train, reuse=False):
         return act6
 
 
-def discriminator(input, is_train, reuse=False):
-    c2, c4, c8, c16 = 64, 128, 256, 512  # channel num: 64, 128, 256, 512
+def discriminator(input, is_train, reuse=tf.AUTO_REUSE):
+    c2, c4, c8, c16 = 36, 72, 144, 228  # channel num: 64, 128, 256, 512
     with tf.variable_scope('dis') as scope:
         if reuse:
             scope.reuse_variables()
@@ -173,7 +173,7 @@ def train():
     fake_image = generator(random_input, random_dim, is_train)
     
     real_result = discriminator(real_image, is_train)
-    fake_result = discriminator(fake_image, is_train, reuse=True)
+    fake_result = discriminator(fake_image, is_train, reuse=tf.AUTO_REUSE)
     
     d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the discriminator.
     g_loss = -tf.reduce_mean(fake_result)  # This optimizes the generator.
@@ -181,7 +181,7 @@ def train():
 
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
-    g_vars = [var for var in t_vars if 'gen' in var.name]
+    g_vars = [var for var in t_vars if 'gens' in var.name]
     trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
     trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
@@ -227,50 +227,25 @@ def train():
 
             # Update the generator
             for k in range(g_iters):
-                # train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
                 _, gLoss = sess.run([trainer_g, g_loss],
                                     feed_dict={random_input: train_noise, is_train: True})
-
-            # print 'train:[%d/%d],d_loss:%f,g_loss:%f' % (i, j, dLoss, gLoss)
             
-        # save check point every 500 epoch
+        # save check point for model every 500 epoch
         if i%500 == 0:
             if not os.path.exists('./model/' + version):
                 os.makedirs('./model/' + version)
             saver.save(sess, './model/' +version + '/' + str(i))  
         if i%50 == 0:
-            # save images
+            # save image after every 50 epochs
             if not os.path.exists(newCaric_path):
                 os.makedirs(newCaric_path)
             sample_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
             imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train: False})
-            # imgtest = imgtest * 255.0
-            # imgtest.astype(np.uint8)
-            save_images(imgtest, [8,8] ,newCaric_path + '/epoch' + str(i) + '.jpg')
+            save_images(imgtest, [6,6] ,newCaric_path + '/epoch' + str(i) + '.jpg')
             
             print('train:[%d],d_loss:%f,g_loss:%f' % (i, dLoss, gLoss))
     coord.request_stop()
     coord.join(threads)
-
-
-# def test():
-    # random_dim = 100
-    # with tf.variable_scope('input'):
-        # real_image = tf.placeholder(tf.float32, shape = [None, HEIGHT, WIDTH, CHANNEL], name='real_image')
-        # random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
-        # is_train = tf.placeholder(tf.bool, name='is_train')
-    
-    # # wgan
-    # fake_image = generator(random_input, random_dim, is_train)
-    # real_result = discriminator(real_image, is_train)
-    # fake_result = discriminator(fake_image, is_train, reuse=True)
-    # sess = tf.InteractiveSession()
-    # sess.run(tf.global_variables_initializer())
-    # variables_to_restore = slim.get_variables_to_restore(include=['gen'])
-    # print(variables_to_restore)
-    # saver = tf.train.Saver(variables_to_restore)
-    # ckpt = tf.train.latest_checkpoint('./model/' + version)
-    # saver.restore(sess, ckpt)
 
 
 if __name__ == "__main__":

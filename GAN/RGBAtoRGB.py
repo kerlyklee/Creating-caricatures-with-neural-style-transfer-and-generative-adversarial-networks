@@ -1,4 +1,4 @@
-# code inspired from https://github.com/llSourcell/Pokemon_GAN
+# code based on from https://github.com/llSourcell/Pokemon_GAN
 from PIL import Image
 import os
 src = "./sized_data"
