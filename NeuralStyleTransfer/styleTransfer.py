@@ -9,17 +9,18 @@ from scipy.optimize import fmin_l_bfgs_b
 from scipy.misc import imsave
 import argparse
 import sys; sys.argv=['']; del sys
-
+import cv2
+import os
 parser = argparse.ArgumentParser(description='Creating Caricatures')
-parser.add_argument('--cont_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/Will_Smith.jpg', type=str, help='Path to original image')
-parser.add_argument('--style_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/KatsePildid/Will_Smith.jpg', type=str, help='Path to wished style image')
+parser.add_argument('--cont_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Portrait/Arnold.jpg', type=str, help='Path to original image')
+parser.add_argument('--style_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Caricature/ArnoldC.jpg', type=str, help='Path to wished style image')
 parser.add_argument('--result_img', default='tulemus', type=str, help='Name of generated images')
-parser.add_argument('--iterations', type=int, default=6, required=False, help='Number of iterations to run')
+parser.add_argument('--iterations', type=int, default=20, required=False, help='Number of iterations to run')
 parser.add_argument('--cont_weight', type=float, default=0.025, required=False, help='Content weight')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False, help='Style weight')
 parser.add_argument('--var_weight', type=float, default=1.0, required=False, help='Total Variation weight')
-parser.add_argument('--height', type=int, default=225, required=False, help='Height of the image')
-parser.add_argument('--width', type=int, default=200, required=False, help='Width of the image')
+parser.add_argument('--height', type=int, default=512, required=False, help='Height of the image')
+parser.add_argument('--width', type=int, default=512, required=False, help='Width of the image')
 
 args = parser.parse_args()
 

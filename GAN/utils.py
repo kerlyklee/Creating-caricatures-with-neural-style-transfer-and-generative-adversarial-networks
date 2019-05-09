@@ -1,4 +1,3 @@
-
 #code based on from https://github.com/llSourcell/Pokemon_GAN
 #Some codes from https://github.com/Newmu/dcgan_code
 

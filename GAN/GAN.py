@@ -1,6 +1,6 @@
 
 # generate caricatures
-# code based on from https://github.com/llSourcell/Pokemon_GAN
+# code ins from https://github.com/llSourcell/Pokemon_GAN
 import os
 import tensorflow as tf
 import numpy as np
@@ -9,47 +9,41 @@ import random
 import scipy.misc
 from utils import *
 
-slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 36
 EPOCH = 500
-version = 'new_caricatures3'
+version = 'new_caricatures8'
 newCaric_path = './' + version
 
 
-#get lrelu
+# lrelu function
 def lrelu(x, n, leak=0.2): 
     return tf.maximum(x, leak * x, name=n) 
- 
+# get rigth caricature data
 def process_data():   
     current_dir = os.getcwd()
     caricature_dir = os.path.join(current_dir, 'Caricature_Data')
     images = []
-    for each in os.listdir(caricature_dir):
+    for each in os.listdir(caricature_dir): 
         images.append(os.path.join(caricature_dir,each))
     # print images    
     all_images = tf.convert_to_tensor(images, dtype = tf.string)
     
-    images_queue = tf.train.slice_input_producer(
-                                        [all_images])
+    images_queue = tf.train.slice_input_producer([all_images])
                                         
     content = tf.read_file(images_queue[0])
-    image = tf.image.decode_jpeg(content, channels = CHANNEL)
-    # sess1 = tf.Session()
-    # print sess1.run(image)
+    image = tf.image.decode_image(content, channels = CHANNEL)
+    #change to get more difrent
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_brightness(image, max_delta = 0.1)
     image = tf.image.random_contrast(image, lower = 0.9, upper = 1.1)
-    # noise = tf.Variable(tf.truncated_normal(shape = [HEIGHT,WIDTH,CHANNEL], dtype = tf.float32, stddev = 1e-3, name = 'noise')) 
-    # print image.get_shape()
+
     size = [HEIGHT, WIDTH]
     image = tf.image.resize_images(image, size)
     image.set_shape([HEIGHT,WIDTH,CHANNEL])
-    # image = image + noise
-    # image = tf.transpose(image, perm=[2, 0, 1])
-    # print image.get_shape()
-    
+
+    #change tensor type
     image = tf.cast(image, tf.float32)
     image = image / 255.0
     
@@ -61,7 +55,7 @@ def process_data():
 
     return iamges_batch, num_images
 
-def generator(input, random_dim, is_train, reuse=tf.AUTO_REUSE):
+def generator(input, random_dim, is_train, reuse=False):
     c4, c8, c16, c32, c64 = 288, 144, 72, 36, 18 # channel num
     s4 = 4
     output_dim = CHANNEL  # RGB image
@@ -112,7 +106,7 @@ def generator(input, random_dim, is_train, reuse=tf.AUTO_REUSE):
         return act6
 
 
-def discriminator(input, is_train, reuse=tf.AUTO_REUSE):
+def discriminator(input, is_train, reuse=False):
     c2, c4, c8, c16 = 36, 72, 144, 228  # channel num: 64, 128, 256, 512
     with tf.variable_scope('dis') as scope:
         if reuse:
@@ -153,7 +147,7 @@ def discriminator(input, is_train, reuse=tf.AUTO_REUSE):
         b2 = tf.get_variable('b2', shape=[1], dtype=tf.float32,
                              initializer=tf.constant_initializer(0.0))
 
-        # wgan just get rid of the sigmoid
+ 
         logits = tf.add(tf.matmul(fc1, w2), b2, name='logits')
         # dcgan
         acted_out = tf.nn.sigmoid(logits)
@@ -161,6 +155,7 @@ def discriminator(input, is_train, reuse=tf.AUTO_REUSE):
 
 
 def train():
+    #G(z)
     random_dim = 100
     
     with tf.variable_scope('input'):
@@ -169,13 +164,13 @@ def train():
         random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
         is_train = tf.placeholder(tf.bool, name='is_train')
     
-    # wgan
+ 
     fake_image = generator(random_input, random_dim, is_train)
     
     real_result = discriminator(real_image, is_train)
     fake_result = discriminator(fake_image, is_train, reuse=tf.AUTO_REUSE)
     
-    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the discriminator.
+    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the dektective
     g_loss = -tf.reduce_mean(fake_result)  # This optimizes the generator.
             
 
@@ -218,7 +213,7 @@ def train():
             for k in range(d_iters):
                 print(k)
                 train_image = sess.run(image_batch)
-                #wgan clip weights
+                #clip weights
                 sess.run(d_clip)
                 
                 # Update the discriminator
