@@ -1,6 +1,6 @@
 
 # generate caricatures
-# code ins from https://github.com/llSourcell/Pokemon_GAN
+# code inspierd from https://github.com/llSourcell/Pokemon_GAN
 import os
 import tensorflow as tf
 import numpy as np
@@ -11,8 +11,8 @@ from utils import *
 
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
-BATCH_SIZE = 36
-EPOCH = 500
+BATCH_SIZE = 64
+EPOCH = 5000
 version = 'new_caricatures8'
 newCaric_path = './' + version
 
@@ -56,7 +56,7 @@ def process_data():
     return iamges_batch, num_images
 
 def generator(input, random_dim, is_train, reuse=False):
-    c4, c8, c16, c32, c64 = 288, 144, 72, 36, 18 # channel num
+    c4, c8, c16, c32, c64 = 512, 256, 128, 64, 36 # channel num
     s4 = 4
     output_dim = CHANNEL  # RGB image
     with tf.variable_scope('gens') as scope:
@@ -107,7 +107,7 @@ def generator(input, random_dim, is_train, reuse=False):
 
 
 def discriminator(input, is_train, reuse=False):
-    c2, c4, c8, c16 = 36, 72, 144, 228  # channel num: 64, 128, 256, 512
+    c2, c4, c8, c16 = 64, 128, 256, 512  # channel num: 64, 128, 256, 512
     with tf.variable_scope('dis') as scope:
         if reuse:
             scope.reuse_variables()
@@ -236,7 +236,7 @@ def train():
                 os.makedirs(newCaric_path)
             sample_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
             imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train: False})
-            save_images(imgtest, [6,6] ,newCaric_path + '/epoch' + str(i) + '.jpg')
+            save_images(imgtest, [8,8] ,newCaric_path + '/epoch' + str(i) + '.jpg')
             
             print('train:[%d],d_loss:%f,g_loss:%f' % (i, dLoss, gLoss))
     coord.request_stop()
