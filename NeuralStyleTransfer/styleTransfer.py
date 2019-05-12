@@ -13,8 +13,8 @@ import cv2
 import os
 #C:/Users/Admin/Thesis/NeuralStyleTransfer/Caricature/kerlyklee@tensorflow-1-vm
 parser = argparse.ArgumentParser(description='Creating Caricatures')
-parser.add_argument('--cont_img', default='kerlyklee@tensorflow-1-vm/Thesis/NeuralStyleTransfer/Portrait/Beyonce.jpg', type=str, help='Path to original image')
-parser.add_argument('--style_img', default='kerlyklee@tensorflow-1-vm/Thesis/NeuralStyleTransfer/Caricature/BeyonceC.jpg', type=str, help='Path to wished style image')
+parser.add_argument('--cont_img', default='kerlyklee@tensorflow-1-vm:~/Thesis/NeuralStyleTransfer/Portrait/Beyonce.jpg', type=str, help='Path to original image')
+parser.add_argument('--style_img', default='kerlyklee@tensorflow-1-vm:~/Thesis/NeuralStyleTransfer/Caricature/BeyonceC.jpg', type=str, help='Path to wished style image')
 parser.add_argument('--result_img', default='tulemus', type=str, help='Name of generated images')
 parser.add_argument('--iterations', type=int, default=250, required=False, help='Number of iterations to run')
 parser.add_argument('--cont_weight', type=float, default=0.025, required=False, help='Content weight')
