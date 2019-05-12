@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # code written by example https://github.com/hunter-heidenreich/ML-Open-Source-Implementations/blob/master/Style-Transfer/Style%20Transfer.ipynb
 import keras.backend as K
-from keras.applications import VGG16
+from keras.applications import VGG19
 from PIL import Image
 import numpy as np
 import time
@@ -66,7 +66,7 @@ def get_layers(cont_matrix, style_matrix, generated_matrix):
    
     # Prepear to new input sizes
     input_tensor = K.concatenate([cont_matrix, style_matrix, generated_matrix], axis=0)
-    model = VGG16(input_tensor=input_tensor, weights='imagenet', include_top=False)
+    model = VGG19(input_tensor=input_tensor, weights='imagenet', include_top=False)
 
     # Change layers to dictionary
     layers = dict([(layer.name, layer.output) for layer in model.layers])
