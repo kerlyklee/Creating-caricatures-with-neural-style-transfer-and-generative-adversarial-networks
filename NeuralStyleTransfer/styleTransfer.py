@@ -12,10 +12,10 @@ import sys; sys.argv=['']; del sys
 import cv2
 import os
 parser = argparse.ArgumentParser(description='Creating Caricatures')
-parser.add_argument('--cont_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Portrait/Arnold.jpg', type=str, help='Path to original image')
-parser.add_argument('--style_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Caricature/ArnoldC.jpg', type=str, help='Path to wished style image')
+parser.add_argument('--cont_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Portrait/Beyonce.jpg', type=str, help='Path to original image')
+parser.add_argument('--style_img', default='C:/Users/Admin/Thesis/NeuralStyleTransfer/Caricature/BeyonceC.jpg', type=str, help='Path to wished style image')
 parser.add_argument('--result_img', default='tulemus', type=str, help='Name of generated images')
-parser.add_argument('--iterations', type=int, default=20, required=False, help='Number of iterations to run')
+parser.add_argument('--iterations', type=int, default=250, required=False, help='Number of iterations to run')
 parser.add_argument('--cont_weight', type=float, default=0.025, required=False, help='Content weight')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False, help='Style weight')
 parser.add_argument('--var_weight', type=float, default=1.0, required=False, help='Total Variation weight')
