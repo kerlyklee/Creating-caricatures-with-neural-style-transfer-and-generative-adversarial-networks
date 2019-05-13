@@ -1,6 +1,6 @@
 
 # generate caricatures
-# code inspierd from https://github.com/llSourcell/Pokemon_GAN
+# code inspired from https://github.com/llSourcell/Pokemon_GAN
 import os
 import tensorflow as tf
 import numpy as np
@@ -8,43 +8,48 @@ import cv2
 import random
 import scipy.misc
 from utils import *
-from tensorflow.contrib import predictor
 
+slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 2501
+EPOCH = 501
 version = 'new_caricatures9'
 newCaric_path = './' + version
 
 
-# lrelu function
+#get lrelu
 def lrelu(x, n, leak=0.2): 
     return tf.maximum(x, leak * x, name=n) 
-# get rigth caricature data
+ 
 def process_data():   
     current_dir = os.getcwd()
-    caricature_dir = os.path.join(current_dir, 'Caricature_Data')
+    pokemon_dir = os.path.join(current_dir, 'Caricature_data')
     images = []
-    for each in os.listdir(caricature_dir): 
-        images.append(os.path.join(caricature_dir,each))
+    for each in os.listdir(pokemon_dir):
+        images.append(os.path.join(pokemon_dir,each))
     # print images    
     all_images = tf.convert_to_tensor(images, dtype = tf.string)
     
-    images_queue = tf.train.slice_input_producer([all_images])
+    images_queue = tf.train.slice_input_producer(
+                                        [all_images])
                                         
     content = tf.read_file(images_queue[0])
-    image = tf.image.decode_image(content, channels = CHANNEL)
-    #change to get more difrent
+    image = tf.image.decode_jpeg(content, channels = CHANNEL)
+    # sess1 = tf.Session()
+    # print sess1.run(image)
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_brightness(image, max_delta = 0.1)
     image = tf.image.random_contrast(image, lower = 0.9, upper = 1.1)
-
+    # noise = tf.Variable(tf.truncated_normal(shape = [HEIGHT,WIDTH,CHANNEL], dtype = tf.float32, stddev = 1e-3, name = 'noise')) 
+    # print image.get_shape()
     size = [HEIGHT, WIDTH]
     image = tf.image.resize_images(image, size)
     image.set_shape([HEIGHT,WIDTH,CHANNEL])
-
-    #change tensor type
+    # image = image + noise
+    # image = tf.transpose(image, perm=[2, 0, 1])
+    # print image.get_shape()
+    
     image = tf.cast(image, tf.float32)
     image = image / 255.0
     
@@ -57,18 +62,16 @@ def process_data():
     return iamges_batch, num_images
 
 def generator(input, random_dim, is_train, reuse=False):
-    c4, c8, c16, c32, c64 = 512, 256, 128, 64, 36 # channel num
+    c4, c8, c16, c32, c64 = 512, 256, 128, 64, 32 # channel num
     s4 = 4
     output_dim = CHANNEL  # RGB image
-    with tf.variable_scope('gens') as scope:
+    with tf.variable_scope('gen') as scope:
         if reuse:
             scope.reuse_variables()
         w1 = tf.get_variable('w1', shape=[random_dim, s4 * s4 * c4], dtype=tf.float32,
                              initializer=tf.truncated_normal_initializer(stddev=0.02))
-        print (w1)
         b1 = tf.get_variable('b1', shape=[c4 * s4 * s4], dtype=tf.float32,
                              initializer=tf.constant_initializer(0.0))
-        print(b1)
         flat_conv1 = tf.add(tf.matmul(input, w1), b1, name='flat_conv1')
          #Convolution, bias, activation, repeat! 
         conv1 = tf.reshape(flat_conv1, shape=[-1, s4, s4, c4], name='conv1')
@@ -119,7 +122,7 @@ def discriminator(input, is_train, reuse=False):
         conv1 = tf.layers.conv2d(input, c2, kernel_size=[5, 5], strides=[2, 2], padding="SAME",
                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
                                  name='conv1')
-        bn1 = tf.contrib.layers.batch_norm(conv1, is_training=is_train, epsilon=1e-5, decay = 0.9,  updates_collections=None, scope = 'bn1')
+        bn1 = tf.contrib.layers.batch_norm(conv1, is_training = is_train, epsilon=1e-5, decay = 0.9,  updates_collections=None, scope = 'bn1')
         act1 = lrelu(conv1, n='act1')
          #Convolution, activation, bias, repeat! 
         conv2 = tf.layers.conv2d(act1, c4, kernel_size=[5, 5], strides=[2, 2], padding="SAME",
@@ -150,17 +153,15 @@ def discriminator(input, is_train, reuse=False):
         b2 = tf.get_variable('b2', shape=[1], dtype=tf.float32,
                              initializer=tf.constant_initializer(0.0))
 
- 
+        # wgan just get rid of the sigmoid
         logits = tf.add(tf.matmul(fc1, w2), b2, name='logits')
         # dcgan
         acted_out = tf.nn.sigmoid(logits)
-        return logits #, acted_out 
+        return logits #, acted_out
 
 
 def train():
-    #G(z)
     random_dim = 100
-    cont = 4
     
     with tf.variable_scope('input'):
         #real and fake image placholders
@@ -168,25 +169,22 @@ def train():
         random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
         is_train = tf.placeholder(tf.bool, name='is_train')
     
-    '''predict_fn = predictor.from_saved_model('C:/Users/Admin/Thesis/GAN_Caroly')
-    predict_fn = a.encode('utf-8').strip()
-    predictions = predict_fn(fake_image)
-    print(predictions)'''
+    # wgan
     fake_image = generator(random_input, random_dim, is_train)
     
     real_result = discriminator(real_image, is_train)
-    fake_result = discriminator(fake_image, is_train, reuse=tf.AUTO_REUSE)
+    fake_result = discriminator(fake_image, is_train, reuse=True)
     
-    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the dektective
-    print (d_loss)
-    g_loss = -tf.reduce_mean(d_loss)  # This optimizes the generator.
+    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the discriminator.
+    g_loss = -tf.reduce_mean(fake_result)  # This optimizes the generator.
             
 
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
-    g_vars = [var for var in t_vars if 'gens' in var.name]
-    trainer_d = tf.train.GradientDescentOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
-    trainer_g = tf.train.GradientDescentOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
+    g_vars = [var for var in t_vars if 'gen' in var.name]
+    optimizer = tf.train.GradientDescentOptimizer(0.5)
+    trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
+    trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
     d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
@@ -221,32 +219,59 @@ def train():
             for k in range(d_iters):
                 print(k)
                 train_image = sess.run(image_batch)
-                #clip weights
+                #wgan clip weights
                 sess.run(d_clip)
                 
                 # Update the discriminator
-                _, dLoss = sess.run([trainer_d, d_loss], feed_dict={random_input: train_noise, real_image: train_image, is_train: True})
+                _, dLoss = sess.run([trainer_d, d_loss],
+                                    feed_dict={random_input: train_noise, real_image: train_image, is_train: True})
 
             # Update the generator
             for k in range(g_iters):
-                _, gLoss = sess.run([trainer_g, g_loss], feed_dict={random_input: train_noise, is_train:True})
+                # train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
+                _, gLoss = sess.run([trainer_g, g_loss],
+                                    feed_dict={random_input: train_noise, is_train: True})
+
+            # print 'train:[%d/%d],d_loss:%f,g_loss:%f' % (i, j, dLoss, gLoss)
             
-        # save check point for model every 500 epoch
+        # save check point every 500 epoch
         if i%500 == 0:
             if not os.path.exists('./model/' + version):
                 os.makedirs('./model/' + version)
             saver.save(sess, './model/' +version + '/' + str(i))  
         if i%50 == 0:
-            # save image after every 50 epochs
+            # save images
             if not os.path.exists(newCaric_path):
                 os.makedirs(newCaric_path)
             sample_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
-            imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train:False})
+            imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train: False})
+            # imgtest = imgtest * 255.0
+            # imgtest.astype(np.uint8)
             save_images(imgtest, [8,8] ,newCaric_path + '/epoch' + str(i) + '.jpg')
             
-            print('train:[%d],g_loss:%f' % (i, gLoss))
+            print('train:[%d],d_loss:%f,g_loss:%f' % (i, dLoss, gLoss))
     coord.request_stop()
     coord.join(threads)
+
+
+# def test():
+    # random_dim = 100
+    # with tf.variable_scope('input'):
+        # real_image = tf.placeholder(tf.float32, shape = [None, HEIGHT, WIDTH, CHANNEL], name='real_image')
+        # random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
+        # is_train = tf.placeholder(tf.bool, name='is_train')
+    
+    # # wgan
+    # fake_image = generator(random_input, random_dim, is_train)
+    # real_result = discriminator(real_image, is_train)
+    # fake_result = discriminator(fake_image, is_train, reuse=True)
+    # sess = tf.InteractiveSession()
+    # sess.run(tf.global_variables_initializer())
+    # variables_to_restore = slim.get_variables_to_restore(include=['gen'])
+    # print(variables_to_restore)
+    # saver = tf.train.Saver(variables_to_restore)
+    # ckpt = tf.train.latest_checkpoint('./model/' + version)
+    # saver.restore(sess, ckpt)
 
 
 if __name__ == "__main__":
