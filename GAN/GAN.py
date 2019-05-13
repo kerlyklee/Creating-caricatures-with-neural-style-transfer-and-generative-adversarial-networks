@@ -14,7 +14,7 @@ from tensorflow.contrib import predictor
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
 EPOCH = 2501
-version = 'new_caricatures'
+version = 'new_caricatures9'
 newCaric_path = './' + version
 
 
@@ -119,7 +119,7 @@ def discriminator(input, is_train, reuse=False):
         conv1 = tf.layers.conv2d(input, c2, kernel_size=[5, 5], strides=[2, 2], padding="SAME",
                                  kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
                                  name='conv1')
-        bn1 = tf.contrib.layers.batch_norm(conv1, is_training = is_train, epsilon=1e-5, decay = 0.9,  updates_collections=None, scope = 'bn1')
+        bn1 = tf.contrib.layers.batch_norm(conv1, is_training=is_train, epsilon=1e-5, decay = 0.9,  updates_collections=None, scope = 'bn1')
         act1 = lrelu(conv1, n='act1')
          #Convolution, activation, bias, repeat! 
         conv2 = tf.layers.conv2d(act1, c4, kernel_size=[5, 5], strides=[2, 2], padding="SAME",
@@ -225,13 +225,11 @@ def train():
                 sess.run(d_clip)
                 
                 # Update the discriminator
-                _, dLoss = sess.run([trainer_d, d_loss],
-                                    feed_dict={random_input: train_noise, real_image: train_image, is_train: True})
+                _, dLoss = sess.run([trainer_d, d_loss], feed_dict={random_input: train_noise, real_image: train_image, is_train: True})
 
             # Update the generator
             for k in range(g_iters):
-                _, gLoss = sess.run([trainer_g, g_loss],
-                                    feed_dict={random_input: train_noise, is_train: True})
+                _, gLoss = sess.run([trainer_g, g_loss], feed_dict={random_input: train_noise, is_train:True})
             
         # save check point for model every 500 epoch
         if i%500 == 0:
@@ -243,7 +241,7 @@ def train():
             if not os.path.exists(newCaric_path):
                 os.makedirs(newCaric_path)
             sample_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
-            imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train: False})
+            imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train:False})
             save_images(imgtest, [8,8] ,newCaric_path + '/epoch' + str(i) + '.jpg')
             
             print('train:[%d],g_loss:%f' % (i, gLoss))
