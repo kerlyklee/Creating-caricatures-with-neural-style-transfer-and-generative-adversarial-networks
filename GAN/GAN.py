@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 151
-version = 'new_caricatures10'
+EPOCH = 1500
+version = 'new_caricatures11'
 newCaric_path = './' + version
 
 
@@ -175,11 +175,11 @@ def train():
     real_result = discriminator(real_image, is_train)
     fake_result = discriminator(fake_image, is_train, reuse=True)
     
-    #d_loss = tf.reduce_mean(real_result) - tf.log(1-D_fake_result)  # This optimizes the discriminator.
-    #g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
+    d_loss = tf.reduce_mean(real_result) - tf.log(1-D_fake_result)  # This optimizes the discriminator.
+    g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
             
-    d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
-    g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
+    #d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
+    #g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
             
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
@@ -214,7 +214,7 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 7
+            d_iters = 10
             g_iters = 1
 
             train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
