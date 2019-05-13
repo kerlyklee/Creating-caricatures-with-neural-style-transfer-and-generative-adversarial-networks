@@ -183,7 +183,7 @@ def train():
     loss_const = 3
     def load_arguments():
         parser = argparse.ArgumentParser()
-        parser.add_argument('-m', '--model', default='C:/Users/Admin/Thesis/GAN_Caroly/saved_model.pbtxt', type=str, help='Path to model')
+        parser.add_argument('-m', '--model', default='saved_model.pbtxt', type=str, help='Path to model')
 
         args = vars(parser.parse_args())
 
