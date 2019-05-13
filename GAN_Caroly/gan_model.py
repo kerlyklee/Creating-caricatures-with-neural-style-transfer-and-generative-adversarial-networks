@@ -21,12 +21,12 @@ import PIL
 from PIL import Image
 from io import StringIO
 from pandas.compat import StringIO
-%matplotlib inline
+
 
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 250
+EPOCH = 251
 version = 'new_caricatures9'
 newCaric_path = './' + version
 
