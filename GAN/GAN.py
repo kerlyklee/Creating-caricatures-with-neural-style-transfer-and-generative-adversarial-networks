@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 501
+EPOCH = 1501
 version = 'new_caricatures9'
 newCaric_path = './' + version
 
@@ -24,7 +24,7 @@ def lrelu(x, n, leak=0.2):
  
 def process_data():   
     current_dir = os.getcwd()
-    pokemon_dir = os.path.join(current_dir, 'Caricature_Data')
+    pokemon_dir = os.path.join(current_dir, 'Caricature_data')
     images = []
     for each in os.listdir(pokemon_dir):
         images.append(os.path.join(pokemon_dir,each))
@@ -182,7 +182,7 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    optimizer = tf.train.GradientDescentOptimizer(0.5)
+    optimizer = tf.train.GradientDescentOptimizer(0.002)
     trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
     trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
