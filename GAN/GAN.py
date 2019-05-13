@@ -182,7 +182,7 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    optimizer = tf.train.GradientDescentOptimizer(0.002)
+    optimizer = tf.train.GradientDescentOptimizer(0.00002)
     trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
     trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
