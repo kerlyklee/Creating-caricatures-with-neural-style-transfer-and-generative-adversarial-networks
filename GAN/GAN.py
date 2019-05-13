@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 2001
+EPOCH = 1501
 version = 'new_caricatures11'
 newCaric_path = './' + version
 
@@ -175,10 +175,10 @@ def train():
     real_result = discriminator(real_image, is_train)
     fake_result = discriminator(fake_image, is_train, reuse=True)
     
-    d_loss = tf.reduce_mean(real_result) - tf.log(1-fake_result)  # This optimizes the discriminator.
-    g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
-    d_loss = tf.convert_to_tensor(d_loss, dtype=tf.float32)
-    g_loss = tf.convert_to_tensor(g_loss, dtype=tf.float32)
+    d_loss = tf.reduce_mean(real_result) - tf.reduce_mean(fake_result)  # This optimizes the discriminator.
+    g_loss = -tf.reduce_mean(tf.reduce_mean(fake_result))  # This optimizes the generator.
+   # d_loss = tf.convert_to_tensor(d_loss, dtype=tf.float32)
+   # g_loss = tf.convert_to_tensor(g_loss, dtype=tf.float32)
             
     #d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
     #g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
