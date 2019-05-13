@@ -11,7 +11,7 @@ from utils import *
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 import argparse
-import imutils
+import utils
 from scipy.misc import imresize
 import matplotlib.pyplot as plt
 import sys; sys.argv=['']; del sys
