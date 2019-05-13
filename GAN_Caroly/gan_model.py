@@ -16,11 +16,9 @@ from scipy.misc import imresize
 import matplotlib.pyplot as plt
 import sys; sys.argv=['']; del sys
 from tensorflow.contrib import predictor
-import torch
 import PIL
 from PIL import Image
-from io import StringIO
-from pandas.compat import StringIO
+
 
 
 
