@@ -8,12 +8,13 @@ import cv2
 import random
 import scipy.misc
 from utils import *
+from tensorflow.contrib import predictor
 
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
 EPOCH = 5000
-version = 'new_caricatures8'
+version = 'new_caricatures'
 newCaric_path = './' + version
 
 
@@ -106,7 +107,7 @@ def generator(input, random_dim, is_train, reuse=False):
         return act6
 
 
-def discriminator(input, is_train, reuse=False):
+'''def discriminator(input, is_train, reuse=False):
     c2, c4, c8, c16 = 64, 128, 256, 512  # channel num: 64, 128, 256, 512
     with tf.variable_scope('dis') as scope:
         if reuse:
@@ -151,12 +152,13 @@ def discriminator(input, is_train, reuse=False):
         logits = tf.add(tf.matmul(fc1, w2), b2, name='logits')
         # dcgan
         acted_out = tf.nn.sigmoid(logits)
-        return logits #, acted_out
+        return logits #, acted_out '''
 
 
 def train():
     #G(z)
     random_dim = 100
+    cont = 4
     
     with tf.variable_scope('input'):
         #real and fake image placholders
@@ -164,29 +166,32 @@ def train():
         random_input = tf.placeholder(tf.float32, shape=[None, random_dim], name='rand_input')
         is_train = tf.placeholder(tf.bool, name='is_train')
     
- 
+    predict_fn = predictor.from_saved_model('C:/Users/Admin/Thesis/GAN_Caroly')
+    predict_fn = a.encode('utf-8').strip()
+    predictions = predict_fn(fake_image)
+    print(predictions)
     fake_image = generator(random_input, random_dim, is_train)
     
-    real_result = discriminator(real_image, is_train)
-    fake_result = discriminator(fake_image, is_train, reuse=tf.AUTO_REUSE)
+    #real_result = discriminator(real_image, is_train)
+    #fake_result = discriminator(fake_image, is_train, reuse=tf.AUTO_REUSE)
     
-    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the dektective
-    g_loss = -tf.reduce_mean(fake_result)  # This optimizes the generator.
+    #d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the dektective
+    g_loss = -tf.reduce_mean((1 - predictions)*cont)  # This optimizes the generator.
             
 
     t_vars = tf.trainable_variables()
-    d_vars = [var for var in t_vars if 'dis' in var.name]
+    #d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gens' in var.name]
-    trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
+    #trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
     trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
-    d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
+    #d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
     
     batch_size = BATCH_SIZE
-    image_batch, samples_num = process_data()
+    #image_batch, samples_num = process_data()
     
-    batch_num = int(samples_num / batch_size)
+    #batch_num = int(samples_num / batch_size)
     total_batch = 0
     sess = tf.Session()
     saver = tf.train.Saver()
@@ -206,10 +211,10 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 5
+            #d_iters = 5
             g_iters = 1
 
-            train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
+            '''train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
             for k in range(d_iters):
                 print(k)
                 train_image = sess.run(image_batch)
@@ -218,7 +223,7 @@ def train():
                 
                 # Update the discriminator
                 _, dLoss = sess.run([trainer_d, d_loss],
-                                    feed_dict={random_input: train_noise, real_image: train_image, is_train: True})
+                                    feed_dict={random_input: train_noise, real_image: train_image, is_train: True})'''
 
             # Update the generator
             for k in range(g_iters):
@@ -238,7 +243,7 @@ def train():
             imgtest = sess.run(fake_image, feed_dict={random_input: sample_noise, is_train: False})
             save_images(imgtest, [8,8] ,newCaric_path + '/epoch' + str(i) + '.jpg')
             
-            print('train:[%d],d_loss:%f,g_loss:%f' % (i, dLoss, gLoss))
+            print('train:[%d],g_loss:%f' % (i, gLoss))
     coord.request_stop()
     coord.join(threads)
 
