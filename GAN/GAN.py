@@ -14,7 +14,7 @@ slim = tf.contrib.slim
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
 EPOCH = 501
-version = 'new_caricatures11'
+version = 'new_caricatures12'
 newCaric_path = './' + version
 
 
@@ -24,7 +24,7 @@ def lrelu(x, n, leak=0.2):
  
 def process_data():   
     current_dir = os.getcwd()
-    pokemon_dir = os.path.join(current_dir, 'Caricature_Data12')
+    pokemon_dir = os.path.join(current_dir, 'Caricature_Data')
     images = []
     for each in os.listdir(pokemon_dir):
         images.append(os.path.join(pokemon_dir,each))
