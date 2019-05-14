@@ -14,7 +14,7 @@ slim = tf.contrib.slim
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
 EPOCH = 51
-version = 'new_caricatures15'
+version = 'new_caricatures16'
 newCaric_path = './' + version
 
 
@@ -180,9 +180,10 @@ def train():
    # d_loss = tf.convert_to_tensor(d_loss, dtype=tf.float32)
    # g_loss = tf.convert_to_tensor(g_loss, dtype=tf.float32)
             
-    d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
-    g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
-            
+    #d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
+    #g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
+    d_loss = tf.reduce_mean(fake_result) - tf.reduce_mean(real_result)  # This optimizes the discriminator.
+    g_loss = -tf.reduce_mean(fake_result)  # Th       
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
