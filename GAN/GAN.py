@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 501
+EPOCH = 250
 version = 'new_caricatures12'
 newCaric_path = './' + version
 
