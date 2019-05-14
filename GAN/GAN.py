@@ -216,7 +216,7 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 10
+            d_iters = 5
             g_iters = 1
 
             train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
