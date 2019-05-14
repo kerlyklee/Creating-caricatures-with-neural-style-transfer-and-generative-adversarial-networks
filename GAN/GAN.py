@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 151
-version = 'new_caricatures14'
+EPOCH = 51
+version = 'new_caricatures15'
 newCaric_path = './' + version
 
 
@@ -175,22 +175,22 @@ def train():
     real_result = discriminator(real_image, is_train)
     fake_result = discriminator(fake_image, is_train, reuse=True)
     
-    d_loss = -tf.reduce_mean(tf.log(real_result) + tf.log(1.- fake_result)) # This opti -mizes the discriminator.
-    g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
+    #d_loss = -tf.reduce_mean(tf.log(real_result) + tf.log(1.- fake_result)) # This opti -mizes the discriminator.
+    #g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
    # d_loss = tf.convert_to_tensor(d_loss, dtype=tf.float32)
    # g_loss = tf.convert_to_tensor(g_loss, dtype=tf.float32)
             
-    #d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
-    #g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
+    d_loss = tf.reduce_mean(tf.nn.relu(1. - tf.log(1-real_result)))  # This optimizes the discriminator.
+    g_loss = -tf.reduce_mean(tf.nn.relu(1. +tf.log(fake_result)))  # This optimizes the generator.
             
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    #optimizer = tf.train.AdamOptimizer(learning_rate=1e-3, beta1=0.5)
-    #trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
-    #trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
-    trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
-    trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
+    optimizer = tf.train.AdamOptimizer(learning_rate=1e-3, beta1=0.5)
+    trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
+    trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
+    #trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
+    #trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
     d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
