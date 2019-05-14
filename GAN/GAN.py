@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 1501
+EPOCH = 501
 version = 'new_caricatures11'
 newCaric_path = './' + version
 
@@ -24,7 +24,7 @@ def lrelu(x, n, leak=0.2):
  
 def process_data():   
     current_dir = os.getcwd()
-    pokemon_dir = os.path.join(current_dir, 'Caricature_Data')
+    pokemon_dir = os.path.join(current_dir, 'Caricature_Data12')
     images = []
     for each in os.listdir(pokemon_dir):
         images.append(os.path.join(pokemon_dir,each))
@@ -175,8 +175,8 @@ def train():
     real_result = discriminator(real_image, is_train)
     fake_result = discriminator(fake_image, is_train, reuse=True)
     
-    d_loss = tf.reduce_mean(real_result) - tf.reduce_mean(fake_result)  # This optimizes the discriminator.
-    g_loss = -tf.reduce_mean(tf.reduce_mean(fake_result))  # This optimizes the generator.
+    d_loss = -tf.reduce_mean(tf.log(real_result) + tf.log(1.- fake_result)) # This opti -mizes the discriminator.
+    g_loss = -tf.reduce_mean(tf.log(fake_result))  # This optimizes the generator.
    # d_loss = tf.convert_to_tensor(d_loss, dtype=tf.float32)
    # g_loss = tf.convert_to_tensor(g_loss, dtype=tf.float32)
             
@@ -186,7 +186,7 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    optimizer = tf.train.GradientDescentOptimizer(0.0002)
+    optimizer = tf.train.AdamOptimizer(learning_rate=1e-3, beta1=0.5)
     trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
     trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
