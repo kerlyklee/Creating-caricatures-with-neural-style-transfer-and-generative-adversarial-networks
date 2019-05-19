@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 7001
-version = 'new_caricatures6'
+EPOCH = 1001
+version = 'Adam_4_09'
 newCaric_path = './' + version
 
 
@@ -187,7 +187,7 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    optimizer = tf.train.AdamOptimizer(learning_rate=1e-3, beta1=0.5)
+    optimizer = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.9, beta2=0.99)
     trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
     trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     #trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
@@ -219,7 +219,7 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 5
+            d_iters = 3
             g_iters = 1
 
             train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
