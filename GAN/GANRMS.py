@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 1000
+EPOCH = 1001
 version = 'new_caricatures17'
 newCaric_path = './' + version
 
@@ -182,8 +182,8 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
-    trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(g_loss, var_list=g_vars)
+    trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-3).minimize(d_loss, var_list=d_vars)
+    trainer_g = tf.train.RMSPropOptimizer(learning_rate=2e-3).minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
     d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
@@ -211,7 +211,7 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 20
+            d_iters = 3
             g_iters = 1
 
             train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
