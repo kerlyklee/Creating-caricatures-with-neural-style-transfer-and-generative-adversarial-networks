@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 7001
-version = 'new_caricatures13'
+EPOCH = 1000
+version = 'new_caricatures17'
 newCaric_path = './' + version
 
 
@@ -211,7 +211,7 @@ def train():
         print("Running epoch {}/{}...".format(i, EPOCH))
         for j in range(batch_num):
             print(j)
-            d_iters = 1
+            d_iters = 20
             g_iters = 1
 
             train_noise = np.random.uniform(-1.0, 1.0, size=[batch_size, random_dim]).astype(np.float32)
