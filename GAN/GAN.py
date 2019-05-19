@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 1001
-version = 'Adam_4_09'
+EPOCH = 601
+version = 'Adam_0.001'
 newCaric_path = './' + version
 
 
@@ -187,7 +187,7 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    optimizer = tf.train.AdamOptimizer(learning_rate=1e-4, beta1=0.9, beta2=0.99)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.9, beta2=0.99)
     trainer_d = optimizer.minimize(d_loss, var_list=d_vars)
     trainer_g = optimizer.minimize(g_loss, var_list=g_vars)
     #trainer_d = tf.train.RMSPropOptimizer(learning_rate=2e-4).minimize(d_loss, var_list=d_vars)
