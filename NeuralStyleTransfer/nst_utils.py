@@ -1,6 +1,6 @@
 ### Most of the code below is due to the MatConvNet team and DeepLearning.ai course staff
 ### except my minor modifications and added method resize_style_image
-
+# code based from https://github.com/PrzemekPobrotyn/Neural-Style-Transfer
 import imageio
 import scipy.misc
 import scipy.io

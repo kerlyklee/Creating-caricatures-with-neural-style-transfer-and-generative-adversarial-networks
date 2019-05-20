@@ -1,10 +1,10 @@
 # code below was part of DeepLearning.ai CNNs course assignment
-
+# code based from https://github.com/PrzemekPobrotyn/Neural-Style-Transfer
 import tensorflow as tf
 from nst_utils import *
 
 
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+'''def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -22,7 +22,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
     # Print New Line on Complete
     if iteration == total:
-        print()
+        print()'''
 
 
 def compute_content_cost(a_C, a_G):
@@ -121,6 +121,7 @@ def total_cost(J_content, J_style, alpha=10, beta=40):
     return J
 
 
+
 def prepare_network(content_image, style_image, learning_rate=1.0):
     '''
     Runs a tensor flow session in which it prepares the graph of cost function
@@ -149,17 +150,19 @@ def prepare_network(content_image, style_image, learning_rate=1.0):
     a_C = sess.run(out)
     a_G = out
     J_content = compute_content_cost(a_C, a_G)
-
+    
     # define graph for computing style cost
     sess.run(model['input'].assign(style_image))
     J_style = compute_style_cost(model, sess)
 
+
     # total cost
     J = total_cost(J_content, J_style)
 
+
     optimizer = tf.train.AdamOptimizer(learning_rate)
     train_step = optimizer.minimize(J)
-
+    
     return sess, train_step, model
 
 def train_network(sess, train_step, model, content_image, output_path,
@@ -183,18 +186,18 @@ def train_network(sess, train_step, model, content_image, output_path,
     sess.run(tf.global_variables_initializer())
     sess.run(model['input'].assign(generated_image))
 
-    printProgressBar(0, num_iterations, prefix='Progress:', suffix='Complete', length=50)
+   # printProgressBar(0, num_iterations, prefix='Progress:', suffix='Complete', length=50)
     for i in range(num_iterations):
         sess.run(train_step)
         generated_image = sess.run(model['input'])
-
+        print(i)
         if save_intermediate:
             if i % (int(num_iterations/10)) == 0:
                 # save current generated image
                 save_image('/output/iter' + str(i) + ".jpg", generated_image)
 
-        printProgressBar(i + 1, num_iterations, prefix='Progress:',
-                         suffix='Complete', length=50)
+    '''printProgressBar(i + 1, num_iterations, prefix='Progress:',
+                         suffix='Complete', length=50)'''
 
     # save last generated image
     name = 'tulemus'

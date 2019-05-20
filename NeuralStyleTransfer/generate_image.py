@@ -1,3 +1,4 @@
+# code based from https://github.com/PrzemekPobrotyn/Neural-Style-Transfer
 from nst_utils import *
 from neural_network import *
 import os

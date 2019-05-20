@@ -9,19 +9,17 @@ from scipy.optimize import fmin_l_bfgs_b
 from scipy.misc import imsave
 import argparse
 import sys; sys.argv=['']; del sys
-import cv2
-import os
-#C:/Users/Admin/Thesis/NeuralStyleTransfer/Caricature/kerlyklee@tensorflow-1-vm
+
 parser = argparse.ArgumentParser(description='Creating Caricatures')
-parser.add_argument('--cont_img', default='Bill_Gates.jpg', type=str, help='Path to original image')
-parser.add_argument('--style_img', default='Bill_GatesC.jpg', type=str, help='Path to wished style image')
+parser.add_argument('--cont_img', default='Jimmy_kimmel.jpg', type=str, help='Path to original image')
+parser.add_argument('--style_img', default='Jimmy_KimmelC.jpg', type=str, help='Path to wished style image')
 parser.add_argument('--result_img', default='tulemus', type=str, help='Name of generated images')
-parser.add_argument('--iterations', type=int, default=1000, required=False, help='Number of iterations to run')
+parser.add_argument('--iterations', type=int, default=4, required=False, help='Number of iterations to run')
 parser.add_argument('--cont_weight', type=float, default=0.025, required=False, help='Content weight')
 parser.add_argument('--style_weight', type=float, default=1.0, required=False, help='Style weight')
 parser.add_argument('--var_weight', type=float, default=1.0, required=False, help='Total Variation weight')
-parser.add_argument('--height', type=int, default=512, required=False, help='Height of the image')
-parser.add_argument('--width', type=int, default=512, required=False, help='Width of the image')
+parser.add_argument('--height', type=int, default=1440, required=False, help='Height of the image')
+parser.add_argument('--width', type=int, default=1000, required=False, help='Width of the image')
 
 args = parser.parse_args()
 
@@ -34,7 +32,7 @@ img_channels = 3
 cont_path = args.cont_img
 style_path = args.style_img
 result_path = args.result_img
-result_ext = '.jpg'
+result_ext = '.png'
 
 CONT_IMG_POS = 0
 STYLE_IMG_POS = 1
@@ -219,9 +217,7 @@ if __name__ == '__main__':
         print('Iteration:', i)
         result_img, min_val, info = fmin_l_bfgs_b(evaluator.loss, result_img.flatten(),
                                                      fprime=evaluator.gradients, maxfun=20)
-        if i%50 == 0:
-            print('Loss:', min_val)
-
-            name = '{}-{}{}'.format(result_path, i+1, result_ext)
-            save_image(name, result_img)
-            print('Saved image to: {}'.format(name))
+        print('Loss:', min_val)
+        name = '{}-{}{}'.format(result_path, i+1, result_ext)
+        save_image(name, result_img)
+        print('Saved image to: {}'.format(name))
