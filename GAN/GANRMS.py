@@ -13,7 +13,7 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 6000
+EPOCH = 6001
 version = 'RMSprop_0.0001'
 newCaric_path = './' + version
 
