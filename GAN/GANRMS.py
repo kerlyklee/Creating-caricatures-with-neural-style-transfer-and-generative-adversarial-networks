@@ -13,8 +13,8 @@ slim = tf.contrib.slim
 
 HEIGHT, WIDTH, CHANNEL = 128, 128, 3
 BATCH_SIZE = 64
-EPOCH = 601
-version = 'RMSprop_0.001'
+EPOCH = 6000
+version = 'RMSprop_0.0001'
 newCaric_path = './' + version
 
 
@@ -182,8 +182,8 @@ def train():
     t_vars = tf.trainable_variables()
     d_vars = [var for var in t_vars if 'dis' in var.name]
     g_vars = [var for var in t_vars if 'gen' in var.name]
-    trainer_d = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(d_loss, var_list=d_vars)
-    trainer_g = tf.train.RMSPropOptimizer(learning_rate=0.001).minimize(g_loss, var_list=g_vars)
+    trainer_d = tf.train.RMSPropOptimizer(learning_rate=0.0001).minimize(d_loss, var_list=d_vars)
+    trainer_g = tf.train.RMSPropOptimizer(learning_rate=0.0001).minimize(g_loss, var_list=g_vars)
     # clip discriminator weights
     d_clip = [v.assign(tf.clip_by_value(v, -0.01, 0.01)) for v in d_vars]
 
